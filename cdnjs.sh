@@ -50,7 +50,7 @@ echo "re-create sparseCheckout config"
 ./tools/createSparseCheckoutConfigForCI.js
 
 echo "reset repository"
-git reset --hard
+git checkout -qf "${DRONE_COMMIT_SHA}"
 
 echo "run npm test"
 npm test -- --silent || npm test
