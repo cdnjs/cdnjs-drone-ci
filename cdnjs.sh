@@ -47,7 +47,7 @@ echo "make sure sparseCheckout enabled"
 git config core.sparseCheckout true
 
 echo "re-create sparseCheckout config"
-./tools/createSparseCheckoutConfig.js
+./tools/createSparseCheckoutConfigForCI.js
 
 echo "reset repository"
 git reset --hard
