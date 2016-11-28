@@ -62,4 +62,8 @@ if [ "${DRONE_COMMIT_BRANCH}" = "master" ] && [ "${DRONE_BUILD_EVENT}" = "push" 
         echo "Trying to store ${FILE} as cache"
         rsync -a --delete -e="sshpass -e ssh -oStrictHostKeyChecking=no -l ${CDNJS_CACHE_USERNAME}" "./${FILE}" "${CDNJS_CACHE_HOST}":"${BASEPATH}${FILE}"
     done
+else
+    echo "Branch: ${DRONE_COMMIT_BRANCH}"
+    echo "Event:  ${DRONE_BUILD_EVENT}"
+    echo "No cache store here"
 fi
