@@ -43,6 +43,9 @@ fi
 echo "npm install && npm update"
 npm install && npm update
 
+echo "make sure sparseCheckout enabled"
+git config core.sparseCheckout true
+
 echo "re-create sparseCheckout config"
 ./tools/createSparseCheckoutConfig.js
 
