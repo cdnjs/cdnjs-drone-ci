@@ -49,8 +49,16 @@ echo "make sure sparseCheckout enabled"
 git config core.sparseCheckout true
 
 echo "re-create sparseCheckout config"
-git log --stat --stat-width=1000 ${DRONE_REPO_BRANCH}..${DRONE_COMMIT_SHA} | grep ' \| ' | awk -F'\|' '{print $1}' | grep 'ajax/libs' | awk -F'/' '{print "ajax/libs/"$3"/"$4}' | uniq >> .git/info/sparse-checkout
-cat .git/info/sparse-checkout
+if [ "${DRONE_BUILD_EVENT}" = "pull_request" ]; then
+    SPARSE_CHECKOUT="$(git log --stat --stat-width=1000 origin/${DRONE_REPO_BRANCH}..${DRONE_COMMIT_SHA} | grep '\ \|\ ' | awk -F'|' '{print $1}' | grep 'ajax/libs' | awk -F'/' '{print "/ajax/libs/"$3"/package.json"}' | uniq )"
+    echo "${SPARSE_CHECKOUT}" >> .git/info/sparse-checkout
+    echo "${SPARSE_CHECKOUT}"
+else
+    echo '/ajax/libs/*/package.json' >> .git/info/sparse-checkout
+fi
+
+git checkout -qf "${DRONE_COMMIT_SHA}"
+./tools/createSparseCheckoutConfigForCI.js
 
 echo "reset repository"
 git checkout -qf "${DRONE_COMMIT_SHA}"
