@@ -40,6 +40,8 @@ elif [ "${PLUGIN_ACTION}" != "test" ]; then
     err "Can't recognize action ${PLUGIN_ACTION}"
 fi
 
+set -x
+
 echo "npm install && npm update"
 npm install && npm update
 
@@ -54,6 +56,8 @@ git checkout -qf "${DRONE_COMMIT_SHA}"
 
 echo "run npm test"
 npm test -- --silent || npm test
+
+set +x
 
 if [ "${DRONE_COMMIT_BRANCH}" = "master" ] && [ "${DRONE_BUILD_EVENT}" = "push" ]; then
     sshpass -e ssh -oStrictHostKeyChecking=no -l ${CDNJS_CACHE_USERNAME} "${CDNJS_CACHE_HOST}" mkdir -p "${BASEPATH}"
