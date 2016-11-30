@@ -2,9 +2,9 @@
 
 set -e
 
-echo "node "$(node  --version)""
+echo "node $(node  --version)"
 git   --version
-echo "npm  "$(npm   --version)""
+echo "npm  $(npm   --version)"
 rsync --version | head -n 1
 
 err() {
@@ -26,14 +26,15 @@ fi
 [ -z "${CDNJS_CACHE_USERNAME}" ] && err  "\"CDNJS_CACHE_USERNAME\" secret not set!"
 [ -z "${CDNJS_CACHE_PASSWORD}" ] && err  "\"CDNJS_CACHE_PASSWORD\" secret not set!"
 
-BASEPATH="~/cache-cdnjs/"
+# shellcheck disable=SC2088
+BASEPATH='~/cache-cdnjs/'
 export SSHPASS="${CDNJS_CACHE_PASSWORD}"
 
 if [ "${PLUGIN_ACTION}" = "restore-cache" ]; then
     for FILE in .git/ node_modules/
     do
         echo "Trying to restore ${FILE} from cache"
-        rsync -a -e="sshpass -e ssh -oStrictHostKeyChecking=no -l ${CDNJS_CACHE_USERNAME}" "${CDNJS_CACHE_HOST}":"${BASEPATH}${FILE}" "./${FILE}"
+        rsync -a -e="sshpass -e ssh -oStrictHostKeyChecking=no -l ${CDNJS_CACHE_USERNAME}" "${CDNJS_CACHE_HOST}:${BASEPATH}${FILE}" "./${FILE}"
     done
     exit 0
 elif [ "${PLUGIN_ACTION}" != "test" ]; then
@@ -50,7 +51,7 @@ git config core.sparseCheckout true
 
 echo "re-create sparseCheckout config"
 if [ "${DRONE_BUILD_EVENT}" = "pull_request" ]; then
-    SPARSE_CHECKOUT="$(git log --stat --stat-width=1000 origin/${DRONE_REPO_BRANCH}..${DRONE_COMMIT_SHA} | grep '\ \|\ ' | awk -F'|' '{print $1}' | grep 'ajax/libs' | awk -F'/' '{print "/ajax/libs/"$3"/package.json"}' | uniq )"
+    SPARSE_CHECKOUT="$(git log --stat --stat-width=1000 origin/"${DRONE_REPO_BRANCH}".."${DRONE_COMMIT_SHA}" | grep '\ \|\ ' | awk -F'|' '{print $1}' | grep 'ajax/libs' | awk -F'/' '{print "/ajax/libs/"$3"/package.json"}' | uniq )"
     echo "${SPARSE_CHECKOUT}" >> .git/info/sparse-checkout
     echo "${SPARSE_CHECKOUT}"
 else
@@ -69,11 +70,11 @@ npm test -- --silent || npm test
 set +x
 
 if [ "${DRONE_COMMIT_BRANCH}" = "master" ] && [ "${DRONE_BUILD_EVENT}" = "push" ]; then
-    sshpass -e ssh -oStrictHostKeyChecking=no -l ${CDNJS_CACHE_USERNAME} "${CDNJS_CACHE_HOST}" mkdir -p "${BASEPATH}"
+    sshpass -e ssh -oStrictHostKeyChecking=no -l "${CDNJS_CACHE_USERNAME}" "${CDNJS_CACHE_HOST}" mkdir -p "${BASEPATH}"
     for FILE in .git/ node_modules/
     do
         echo "Trying to store ${FILE} as cache"
-        rsync -a --delete -e="sshpass -e ssh -oStrictHostKeyChecking=no -l ${CDNJS_CACHE_USERNAME}" "./${FILE}" "${CDNJS_CACHE_HOST}":"${BASEPATH}${FILE}"
+        rsync -a --delete -e="sshpass -e ssh -oStrictHostKeyChecking=no -l ${CDNJS_CACHE_USERNAME}" "./${FILE}" "${CDNJS_CACHE_HOST}:${BASEPATH}${FILE}"
     done
 else
     echo "Branch: ${DRONE_COMMIT_BRANCH}"
