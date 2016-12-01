@@ -7,14 +7,9 @@ git   --version
 echo "npm  $(npm   --version)"
 rsync --version | head -n 1
 
-err() {
-    >&2 echo "$@"
-    exit 1
-}
+err() { >&2 echo "$@"; exit 1; }
 
-if [ "{$CI}" != "drone" ] && [ "${DRONE}" != "true" ]; then
-    err "Not a Drone CI environment"
-fi
+if [ "{$CI}" != "drone" ] && [ "${DRONE}" != "true" ]; then err "Not a Drone CI environment"; fi
 
 [ -z "${PLUGIN_ACTION}" ] && err "cache action not set! test or restore-cache ?"
 
@@ -37,14 +32,9 @@ if [ "${PLUGIN_ACTION}" = "restore-cache" ]; then
         rsync -a -e="sshpass -e ssh -oStrictHostKeyChecking=no -l ${CDNJS_CACHE_USERNAME}" "${CDNJS_CACHE_HOST}:${BASEPATH}${FILE}" "./${FILE}"
     done
     exit 0
-elif [ "${PLUGIN_ACTION}" != "test" ]; then
-    err "Can't recognize action ${PLUGIN_ACTION}"
 fi
 
-set -x
-
-echo "npm install && npm update"
-npm install && npm update
+if [ "${PLUGIN_ACTION}" != "test" ]; then err "Can't recognize action ${PLUGIN_ACTION}"; fi
 
 echo "make sure sparseCheckout enabled"
 git config core.sparseCheckout true
@@ -67,10 +57,11 @@ git checkout -qf "${DRONE_COMMIT_SHA}"
 echo "reset repository"
 git checkout -qf "${DRONE_COMMIT_SHA}"
 
+echo "npm install && npm update"
+npm install && npm update
+
 echo "run npm test"
 npm test -- --silent || npm test
-
-set +x
 
 if [ "${DRONE_COMMIT_BRANCH}" = "master" ] && [ "${DRONE_BUILD_EVENT}" = "push" ]; then
     sshpass -e ssh -oStrictHostKeyChecking=no -l "${CDNJS_CACHE_USERNAME}" "${CDNJS_CACHE_HOST}" mkdir -p "${BASEPATH}"
