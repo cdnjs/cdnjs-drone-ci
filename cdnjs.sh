@@ -55,7 +55,7 @@ git checkout -qf "${DRONE_COMMIT_SHA}"
 ./tools/createSparseCheckoutConfigForCI.js
 
 echo "reset repository"
-git checkout -qf "${DRONE_COMMIT_SHA}"
+git reset --hard
 
 echo "npm install && npm update"
 npm install && npm update
