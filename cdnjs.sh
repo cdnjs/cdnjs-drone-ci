@@ -51,6 +51,7 @@ else
     echo '/ajax/libs/*/package.json' >> .git/info/sparse-checkout
 fi
 
+echo "Phase one file checkout"
 git checkout -qf "${DRONE_COMMIT_SHA}"
 ./tools/createSparseCheckoutConfigForCI.js
 
