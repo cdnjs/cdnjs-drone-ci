@@ -59,7 +59,7 @@ echo "Phase one file checkout"
 git checkout -qf "${DRONE_COMMIT_SHA}"
 ./tools/createSparseCheckoutConfigForCI.js
 
-echo "reset repository"
+echo "reset repository (phase two checkout)"
 git reset --hard
 
 echo "npm install && npm update"
