@@ -36,6 +36,10 @@ fi
 
 if [ "${PLUGIN_ACTION}" != "test" ]; then err "Can't recognize action ${PLUGIN_ACTION}"; fi
 
+if [ ! -f ".git/info/sparse-checkout" ]; then
+    err "Didn't detect sparse-checkout config, should be created from previous stage!"
+fi
+
 echo "make sure sparseCheckout enabled"
 git config core.sparseCheckout true
 
