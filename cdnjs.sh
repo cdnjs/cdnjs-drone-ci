@@ -59,6 +59,15 @@ echo "Phase one file checkout"
 git checkout -qf "${DRONE_COMMIT_SHA}"
 ./tools/createSparseCheckoutConfigForCI.js
 
+if [ "${DRONE_BUILD_EVENT}" = "pull_request" ] ; then
+    for PACKAGE in ${SPARSE_CHECKOUT}
+    do
+        if [ ! -f "${PWD}${PACKAGE}" ]; then
+            err "${PACKAGE} not found!!!"
+        fi
+    done
+fi
+
 echo "reset repository (phase two checkout)"
 git reset --hard
 
