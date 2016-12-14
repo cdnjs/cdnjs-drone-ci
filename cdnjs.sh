@@ -43,6 +43,10 @@ fi
 echo "make sure sparseCheckout enabled"
 git config core.sparseCheckout true
 
+if [ "${DRONE_COMMIT_REFSPEC}" ]; then
+    DRONE_COMMIT_BRANCH="$(echo ${DRONE_COMMIT_REFSPEC} | awk -F':' '{print $1}')"
+fi
+
 echo "re-create sparseCheckout config"
 if [ "${DRONE_BUILD_EVENT}" = "pull_request" ]; then
     if [ "$(git log --pretty='%an' "${DRONE_COMMIT_SHA}".."origin/${DRONE_REPO_BRANCH}" | grep -cv '^PeterBot$' )" -gt 15 ]; then
