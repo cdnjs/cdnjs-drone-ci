@@ -4,7 +4,7 @@ set -e
 
 echo
 echo "Tool versions:"
-echo "node  v$(node  --version)"
+echo "node  $(node  --version)"
 echo "git   v$(git   --version | awk '{print $3}')"
 echo "npm   v$(npm   --version)"
 echo "rsync v$(rsync --version | head -n 1 | awk '{print $3}')"
