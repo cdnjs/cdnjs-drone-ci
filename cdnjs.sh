@@ -7,7 +7,12 @@ git   --version
 echo "npm  $(npm   --version)"
 rsync --version | head -n 1
 
-err() { >&2 echo "$@"; exit 1; }
+err() {
+    >&2 echo -e "\n==========ERROR==========\n";
+    >&2 echo "$@";
+    >&2 echo -e "\n==========ERROR==========\n";
+    exit 1;
+}
 
 if [ "{$CI}" != "drone" ] && [ "${DRONE}" != "true" ]; then err "Not a Drone CI environment"; fi
 
