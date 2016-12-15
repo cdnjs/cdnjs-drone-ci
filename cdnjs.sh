@@ -20,11 +20,8 @@ if [ "${CI}" != "drone" ] && [ "${DRONE}" != "true" ]; then err "Not a Drone CI 
 
 [ -z "${PLUGIN_ACTION}" ] && err "cache action not set! test or restore-cache ?"
 
-[ -z "${CDNJS_CACHE_HOST}" ] && {
-    CDNJS_CACHE_HOST="$(ip route | awk '{ if ("default" == $1) print $3}')"
-    echo "\"CDNJS_CACHE_HOST\" secret not set"
-    echo "use ${CDNJS_CACHE_HOST} as it's default gateway, should be the host!"
-}
+CDNJS_CACHE_HOST="$(ip route | awk '{ if ("default" == $1) print $3}')"
+echo "use ${CDNJS_CACHE_HOST} as it's default gateway, should be the host!"
 [ -z "${CDNJS_CACHE_USERNAME}" ] && err  "\"CDNJS_CACHE_USERNAME\" secret not set!"
 [ -z "${CDNJS_CACHE_PASSWORD}" ] && err  "\"CDNJS_CACHE_PASSWORD\" secret not set!"
 
