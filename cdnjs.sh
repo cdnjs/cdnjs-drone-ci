@@ -88,7 +88,7 @@ echo "npm install && npm update"
 npm install && npm update
 
 echo "run npm test"
-npm test -- --silent || npm test
+npm test -- --silent > /dev/null 2>&1 || npm test
 
 if [ "${DRONE_COMMIT_BRANCH}" = "master" ] && [ "${DRONE_BUILD_EVENT}" = "push" ]; then
     sshpass -e ssh -oStrictHostKeyChecking=no -l "${CDNJS_CACHE_USERNAME}" "${CDNJS_CACHE_HOST}" mkdir -p "${BASEPATH}" > /dev/null 2>&1
