@@ -21,6 +21,10 @@ if [ "{$CI}" != "drone" ] && [ "${DRONE}" != "true" ]; then err "Not a Drone CI 
 [ -z "${CDNJS_CACHE_USERNAME}" ] && err  "\"CDNJS_CACHE_USERNAME\" secret not set!"
 [ -z "${CDNJS_CACHE_PASSWORD}" ] && err  "\"CDNJS_CACHE_PASSWORD\" secret not set!"
 
+if [ "${DRONE_COMMIT_REFSPEC}" ]; then
+    DRONE_COMMIT_BRANCH="$(echo ${DRONE_COMMIT_REFSPEC} | awk -F':' '{print $1}')"
+fi
+
 # shellcheck disable=SC2088
 BASEPATH='~/cache-cdnjs/'
 export SSHPASS="${CDNJS_CACHE_PASSWORD}"
@@ -42,10 +46,6 @@ fi
 
 echo "make sure sparseCheckout enabled"
 git config core.sparseCheckout true
-
-if [ "${DRONE_COMMIT_REFSPEC}" ]; then
-    DRONE_COMMIT_BRANCH="$(echo ${DRONE_COMMIT_REFSPEC} | awk -F':' '{print $1}')"
-fi
 
 echo "re-create sparseCheckout config"
 if [ "${DRONE_BUILD_EVENT}" = "pull_request" ]; then
