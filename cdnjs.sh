@@ -14,7 +14,7 @@ err() {
     exit 1;
 }
 
-if [ "{$CI}" != "drone" ] && [ "${DRONE}" != "true" ]; then err "Not a Drone CI environment"; fi
+if [ "${CI}" != "drone" ] && [ "${DRONE}" != "true" ]; then err "Not a Drone CI environment"; fi
 
 [ -z "${PLUGIN_ACTION}" ] && err "cache action not set! test or restore-cache ?"
 
