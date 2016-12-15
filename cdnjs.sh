@@ -23,6 +23,9 @@ if [ "{$CI}" != "drone" ] && [ "${DRONE}" != "true" ]; then err "Not a Drone CI 
 
 if [ "${DRONE_COMMIT_REFSPEC}" ]; then
     DRONE_COMMIT_BRANCH="$(echo ${DRONE_COMMIT_REFSPEC} | awk -F':' '{print $1}')"
+    if [ "${DRONE_COMMIT_BRANCH}" = "master" ]; then
+        err "Please do not send pull request from master branch! You should create a new branch for pull request!"
+    fi
 fi
 
 # shellcheck disable=SC2088
