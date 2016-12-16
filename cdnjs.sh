@@ -1,19 +1,21 @@
 #!/bin/sh
 
+. /ColorEcho.sh
+
 set -e
 export GPG_TTY=/dev/console
 
 echo
-echo "Tool versions:"
+echoCyan "Tool versions:"
 echo "node  $(node  --version)"
 echo "git   v$(git   --version | awk '{print $3}')"
 echo "npm   v$(npm   --version)"
 echo "rsync v$(rsync --version | head -n 1 | awk '{print $3}')"
 
 err() {
-    >&2 echo -e "\n==========ERROR==========\n";
-    >&2 echo "$@";
-    >&2 echo -e "\n==========ERROR==========\n";
+    >&2 echoRed -e "\n==========ERROR==========\n";
+    >&2 echoBoldRed "$@";
+    >&2 echoRed -e "\n==========ERROR==========\n";
     exit 1;
 }
 
@@ -31,7 +33,7 @@ if [ "${DRONE_COMMIT_REFSPEC}" ] && [ "${DRONE_BUILD_EVENT}" = "pull_request" ];
     if [ "${DRONE_COMMIT_BRANCH}" = "master" ]; then
         err "Please do not send pull request from master branch!\nYou should create a new branch with meaningful name for pull request!"
     else
-        echo "PR branch: ${DRONE_COMMIT_BRANCH}"
+        echoCyan "PR branch: ${DRONE_COMMIT_BRANCH}"
     fi
 fi
 
@@ -42,7 +44,7 @@ export SSHPASS="${CDNJS_CACHE_PASSWORD}"
 if [ "${PLUGIN_ACTION}" = "restore-cache" ]; then
     for FILE in .git/ node_modules/
     do
-        echo "Trying to restore ${FILE} from cache"
+        echoCyan "Trying to restore ${FILE} from cache"
         rsync -aq -e="sshpass -e ssh -oStrictHostKeyChecking=no -l ${CDNJS_CACHE_USERNAME}" "${CDNJS_CACHE_HOST}:${BASEPATH}${FILE}" "./${FILE}" > /dev/null 2>&1
     done
     exit 0
@@ -54,27 +56,27 @@ if [ ! -f ".git/info/sparse-checkout" ]; then
     err "Didn't detect sparse-checkout config, should be created from previous stage!"
 fi
 
-echo "make sure sparseCheckout enabled"
+echoCyan "make sure sparseCheckout enabled"
 git config core.sparseCheckout true
 
-echo "re-create sparseCheckout config"
+echoCyan "re-create sparseCheckout config"
 if [ "${DRONE_BUILD_EVENT}" = "pull_request" ]; then
     if [ "$(git log --pretty='%an' "${DRONE_COMMIT_SHA}".."origin/${DRONE_REPO_BRANCH}" | grep -cv '^PeterBot$' )" -gt 15 ]; then
         err "The branch ${DRONE_COMMIT_BRANCH} for this pull request is too old, please rebase this branch with the latest ${DRONE_REPO_BRANCH} branch from upstream!"
     fi
     SPARSE_CHECKOUT="$(git log --oneline --stat --stat-width=1000 origin/"${DRONE_REPO_BRANCH}".."${DRONE_COMMIT_SHA}" | grep '\ |\ ' | awk -F'|' '{print $1}' | grep 'ajax/libs' | awk -F'/' '{print "/ajax/libs/"$3"/package.json"}' | uniq )"
     if [ "${SPARSE_CHECKOUT}" = "" ]; then
-        echo "No library change detected, will checkout all the libraries!"
+        echoBoldYellow "No library change detected, will checkout all the libraries!"
         echo '/ajax/libs/*/package.json' >> .git/info/sparse-checkout
     else
         echo "${SPARSE_CHECKOUT}" >> .git/info/sparse-checkout
-        echo "${SPARSE_CHECKOUT}"
+        echoCyan "${SPARSE_CHECKOUT}"
     fi
 else
     echo '/ajax/libs/*/package.json' >> .git/info/sparse-checkout
 fi
 
-echo "Phase one file checkout"
+echoCyan "Phase one file checkout"
 git checkout -qf "${DRONE_COMMIT_SHA}"
 ./tools/createSparseCheckoutConfigForCI.js
 
@@ -87,24 +89,24 @@ if [ "${DRONE_BUILD_EVENT}" = "pull_request" ] ; then
     done
 fi
 
-echo "reset repository (phase two checkout)"
+echoCyan "reset repository (phase two checkout)"
 git reset --hard
 
-echo "npm install && npm update"
+echoCyan "npm install && npm update"
 npm install && npm update
 
-echo "run npm test"
+echoCyan "run npm test"
 npm test -- --silent > /dev/null 2>&1 || npm test
 
 if [ "${DRONE_COMMIT_BRANCH}" = "master" ] && [ "${DRONE_BUILD_EVENT}" = "push" ]; then
     sshpass -e ssh -oStrictHostKeyChecking=no -l "${CDNJS_CACHE_USERNAME}" "${CDNJS_CACHE_HOST}" mkdir -p "${BASEPATH}" > /dev/null 2>&1
     for FILE in .git/ node_modules/
     do
-        echo "Trying to store ${FILE} as cache"
+        echoCyan "Trying to store ${FILE} as cache"
         rsync -aq --delete -e="sshpass -e ssh -oStrictHostKeyChecking=no -l ${CDNJS_CACHE_USERNAME}" "./${FILE}" "${CDNJS_CACHE_HOST}:${BASEPATH}${FILE}" > /dev/null 2>&1
     done
 else
     echo "Branch: ${DRONE_COMMIT_BRANCH}"
     echo "Event:  ${DRONE_BUILD_EVENT}"
-    echo "No cache store here"
+    echoBOldYellow "No cache store here"
 fi
