@@ -70,7 +70,7 @@ if [ "${DRONE_BUILD_EVENT}" = "pull_request" ]; then
         echo '/ajax/libs/*/package.json' >> .git/info/sparse-checkout
     else
         echo "${SPARSE_CHECKOUT}" >> .git/info/sparse-checkout
-        echoOrange "${SPARSE_CHECKOUT}"
+        echoBlue "${SPARSE_CHECKOUT}"
     fi
 else
     echo '/ajax/libs/*/package.json' >> .git/info/sparse-checkout
