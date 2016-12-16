@@ -6,11 +6,11 @@ set -e
 export GPG_TTY=/dev/console
 
 echo
-echoCyan "Tool versions:"
-echo "node  $(node  --version)"
-echo "git   v$(git   --version | awk '{print $3}')"
-echo "npm   v$(npm   --version)"
-echo "rsync v$(rsync --version | head -n 1 | awk '{print $3}')"
+echoBoldCyan "Tool versions:"
+echoCyan "node  $(node  --version)"
+echoCyan "git   v$(git   --version | awk '{print $3}')"
+echoCyan "npm   v$(npm   --version)"
+echoCyan "rsync v$(rsync --version | head -n 1 | awk '{print $3}')"
 
 err() {
     >&2 echoRed -e "\n==========ERROR==========\n";
@@ -24,7 +24,7 @@ if [ "${CI}" != "drone" ] && [ "${DRONE}" != "true" ]; then err "Not a Drone CI 
 [ -z "${PLUGIN_ACTION}" ] && err "cache action not set! test or restore-cache ?"
 
 CDNJS_CACHE_HOST="$(ip route | awk '{ if ("default" == $1) print $3}')"
-echo "use ${CDNJS_CACHE_HOST} as it's default gateway, should be the host!"
+echoCyan "use ${CDNJS_CACHE_HOST} as it's default gateway, should be the host!"
 [ -z "${CDNJS_CACHE_USERNAME}" ] && err  "\"CDNJS_CACHE_USERNAME\" secret not set!"
 [ -z "${CDNJS_CACHE_PASSWORD}" ] && err  "\"CDNJS_CACHE_PASSWORD\" secret not set!"
 
@@ -44,7 +44,7 @@ export SSHPASS="${CDNJS_CACHE_PASSWORD}"
 if [ "${PLUGIN_ACTION}" = "restore-cache" ]; then
     for FILE in .git/ node_modules/
     do
-        echoCyan "Trying to restore ${FILE} from cache"
+        echoLightBoldMagenta "Trying to restore ${FILE} from cache"
         rsync -aq -e="sshpass -e ssh -oStrictHostKeyChecking=no -l ${CDNJS_CACHE_USERNAME}" "${CDNJS_CACHE_HOST}:${BASEPATH}${FILE}" "./${FILE}" > /dev/null 2>&1
     done
     exit 0
@@ -70,13 +70,13 @@ if [ "${DRONE_BUILD_EVENT}" = "pull_request" ]; then
         echo '/ajax/libs/*/package.json' >> .git/info/sparse-checkout
     else
         echo "${SPARSE_CHECKOUT}" >> .git/info/sparse-checkout
-        echoCyan "${SPARSE_CHECKOUT}"
+        echoOrange "${SPARSE_CHECKOUT}"
     fi
 else
     echo '/ajax/libs/*/package.json' >> .git/info/sparse-checkout
 fi
 
-echoCyan "Phase one file checkout"
+echoGreen "Phase one file checkout"
 git checkout -qf "${DRONE_COMMIT_SHA}"
 ./tools/createSparseCheckoutConfigForCI.js
 
@@ -89,7 +89,7 @@ if [ "${DRONE_BUILD_EVENT}" = "pull_request" ] ; then
     done
 fi
 
-echoCyan "reset repository (phase two checkout)"
+echoGreen "reset repository (phase two checkout)"
 git reset --hard
 
 echoCyan "npm install && npm update"
@@ -102,7 +102,7 @@ if [ "${DRONE_COMMIT_BRANCH}" = "master" ] && [ "${DRONE_BUILD_EVENT}" = "push" 
     sshpass -e ssh -oStrictHostKeyChecking=no -l "${CDNJS_CACHE_USERNAME}" "${CDNJS_CACHE_HOST}" mkdir -p "${BASEPATH}" > /dev/null 2>&1
     for FILE in .git/ node_modules/
     do
-        echoCyan "Trying to store ${FILE} as cache"
+        echoLightBoldMagenta "Trying to store ${FILE} as cache"
         rsync -aq --delete -e="sshpass -e ssh -oStrictHostKeyChecking=no -l ${CDNJS_CACHE_USERNAME}" "./${FILE}" "${CDNJS_CACHE_HOST}:${BASEPATH}${FILE}" > /dev/null 2>&1
     done
 else
