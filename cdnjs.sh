@@ -1,6 +1,7 @@
 #!/bin/sh
 
 set -e
+export GPG_TTY=/dev/console
 
 echo
 echo "Tool versions:"
