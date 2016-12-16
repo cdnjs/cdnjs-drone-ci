@@ -8,4 +8,5 @@ RUN git --version
 RUN node --version
 RUN rsync --version
 ADD cdnjs.sh /bin/
+ADD ColorEchoForShell/dist/ColorEcho.sh /
 ENTRYPOINT /bin/cdnjs.sh
