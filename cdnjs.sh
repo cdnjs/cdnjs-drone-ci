@@ -62,8 +62,13 @@ if [ "${DRONE_BUILD_EVENT}" = "pull_request" ]; then
         err "The branch ${DRONE_COMMIT_BRANCH} for this pull request is too old, please rebase this branch with the latest ${DRONE_REPO_BRANCH} branch from upstream!"
     fi
     SPARSE_CHECKOUT="$(git log --oneline --stat --stat-width=1000 origin/"${DRONE_REPO_BRANCH}".."${DRONE_COMMIT_SHA}" | grep '\ |\ ' | awk -F'|' '{print $1}' | grep 'ajax/libs' | awk -F'/' '{print "/ajax/libs/"$3"/package.json"}' | uniq )"
-    echo "${SPARSE_CHECKOUT}" >> .git/info/sparse-checkout
-    echo "${SPARSE_CHECKOUT}"
+    if [ "${SPARSE_CHECKOUT}" = "" ]; then
+        echo "No library change detected, will checkout all the libraries!"
+        echo '/ajax/libs/*/package.json' >> .git/info/sparse-checkout
+    else
+        echo "${SPARSE_CHECKOUT}" >> .git/info/sparse-checkout
+        echo "${SPARSE_CHECKOUT}"
+    fi
 else
     echo '/ajax/libs/*/package.json' >> .git/info/sparse-checkout
 fi
