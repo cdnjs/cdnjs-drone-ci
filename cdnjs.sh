@@ -108,5 +108,5 @@ if [ "${DRONE_COMMIT_BRANCH}" = "master" ] && [ "${DRONE_BUILD_EVENT}" = "push" 
 else
     echo "Branch: ${DRONE_COMMIT_BRANCH}"
     echo "Event:  ${DRONE_BUILD_EVENT}"
-    echoBOldYellow "No cache store here"
+    echoBoldYellow "No cache store here"
 fi
