@@ -104,7 +104,7 @@ if [ "${DRONE_COMMIT_BRANCH}" = "master" ] && [ "${DRONE_BUILD_EVENT}" = "push" 
     for FILE in .git/ node_modules/
     do
         echoLightBoldMagenta "Trying to store ${FILE} as cache"
-        rsync -aq --delete -e="sshpass -e ssh -oStrictHostKeyChecking=no -l ${CDNJS_CACHE_USERNAME}" "./${FILE}" "${CDNJS_CACHE_HOST}:${BASEPATH}${FILE}" > /dev/null 2>&1
+        rsync -aq --delete --delete-after -e="sshpass -e ssh -oStrictHostKeyChecking=no -l ${CDNJS_CACHE_USERNAME}" "./${FILE}" "${CDNJS_CACHE_HOST}:${BASEPATH}${FILE}" > /dev/null 2>&1
     done
 else
     echo "Branch: ${DRONE_COMMIT_BRANCH}"
