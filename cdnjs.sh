@@ -13,9 +13,9 @@ echoCyan "npm   v$(npm   --version)"
 echoCyan "rsync v$(rsync --version | head -n 1 | awk '{print $3}')"
 
 err() {
-    >&2 echoRed "\n==========ERROR==========\n";
-    >&2 echoBoldRed "$@";
-    >&2 echoRed "\n==========ERROR==========\n";
+    >&2 echoBoldRed "\n==========ERROR==========\n";
+    >&2 echo "$@";
+    >&2 echoBoldRed "\n==========ERROR==========\n";
     exit 1;
 }
 
