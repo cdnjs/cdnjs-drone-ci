@@ -56,6 +56,10 @@ if [ ! -f ".git/info/sparse-checkout" ]; then
     err "Didn't detect sparse-checkout config, should be created from previous stage!"
 fi
 
+if [ "$(git ls-tree "${DRONE_COMMIT_SHA}" ajax/ | awk '{print $4}')" != "ajax/libs" ]; then
+    err "There should be only one directory - 'libs' under 'ajax', please make sure you put the files under correct path."
+fi
+
 echoCyan "make sure git gc.auto disabled"
 git config gc.auto 0
 
