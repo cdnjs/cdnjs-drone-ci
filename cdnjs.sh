@@ -56,7 +56,7 @@ if [ ! -f ".git/info/sparse-checkout" ]; then
     err "Didn't detect sparse-checkout config, should be created from previous stage!"
 fi
 
-echoCyan "make sure sparseCheckout enabled"
+echoCyan "make sure git core.sparseCheckout enabled"
 git config core.sparseCheckout true
 
 echoCyan "re-create sparseCheckout config"
