@@ -37,12 +37,14 @@ if [ "${DRONE_COMMIT_REFSPEC}" ] && [ "${DRONE_BUILD_EVENT}" = "pull_request" ];
     fi
 fi
 
+CACHE_LIST=".git/ node_modules/"
+
 # shellcheck disable=SC2088
 BASEPATH='~/cache-cdnjs/'
 export SSHPASS="${CDNJS_CACHE_PASSWORD}"
 
 if [ "${PLUGIN_ACTION}" = "restore-cache" ]; then
-    for FILE in .git/ node_modules/
+    for FILE in ${CACHE_LIST}
     do
         echoMagenta "Trying to restore ${FILE} from cache"
         rsync -aq -e="sshpass -e ssh -oStrictHostKeyChecking=no -l ${CDNJS_CACHE_USERNAME}" "${CDNJS_CACHE_HOST}:${BASEPATH}${FILE}" "./${FILE}" > /dev/null 2>&1
@@ -116,7 +118,7 @@ npm test -- --silent > /dev/null 2>&1 || npm test -- --color
 
 if [ "${DRONE_COMMIT_BRANCH}" = "master" ] && [ "${DRONE_BUILD_EVENT}" = "push" ]; then
     sshpass -e ssh -oStrictHostKeyChecking=no -l "${CDNJS_CACHE_USERNAME}" "${CDNJS_CACHE_HOST}" mkdir -p "${BASEPATH}" > /dev/null 2>&1
-    for FILE in .git/ node_modules/
+    for FILE in ${CACHE_LIST}
     do
         echoMagenta "Trying to store ${FILE} as cache"
         rsync -aq --delete --delete-after -e="sshpass -e ssh -oStrictHostKeyChecking=no -l ${CDNJS_CACHE_USERNAME}" "./${FILE}" "${CDNJS_CACHE_HOST}:${BASEPATH}${FILE}" > /dev/null 2>&1
