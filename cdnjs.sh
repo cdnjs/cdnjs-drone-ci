@@ -83,7 +83,10 @@ if [ "${DRONE_BUILD_EVENT}" = "pull_request" ]; then
     else
         echo "${SPARSE_CHECKOUT}" >> .git/info/sparse-checkout
         echoGreen "Library change detected, use sparseCheckout to checkout path as below:"
-        echoBlue "${SPARSE_CHECKOUT}"
+        for SPARSE_CHECKOUT_TMP in ${SPARSE_CHECKOUT}
+        do
+            echoBlue "${SPARSE_CHECKOUT_TMP}"
+        done
     fi
 else
     echo '/ajax/libs/*/package.json' >> .git/info/sparse-checkout
