@@ -6,16 +6,16 @@ set -e
 export GPG_TTY=/dev/console
 
 echo
-echoBoldCyan "Tool versions:"
+echoCyan "Tool versions:"
 echoCyan "node  $(node  --version)"
 echoCyan "git   v$(git   --version | awk '{print $3}')"
 echoCyan "npm   v$(npm   --version)"
 echoCyan "rsync v$(rsync --version | head -n 1 | awk '{print $3}')"
 
 err() {
-    >&2 echoBoldRed "\n==========ERROR==========\n";
+    >&2 echoRed "\n==========ERROR==========\n";
     >&2 echo "$@";
-    >&2 echoBoldRed "\n==========ERROR==========\n";
+    >&2 echoRed "\n==========ERROR==========\n";
     exit 1;
 }
 
@@ -44,7 +44,7 @@ export SSHPASS="${CDNJS_CACHE_PASSWORD}"
 if [ "${PLUGIN_ACTION}" = "restore-cache" ]; then
     for FILE in .git/ node_modules/
     do
-        echoLightBoldMagenta "Trying to restore ${FILE} from cache"
+        echoMagenta "Trying to restore ${FILE} from cache"
         rsync -aq -e="sshpass -e ssh -oStrictHostKeyChecking=no -l ${CDNJS_CACHE_USERNAME}" "${CDNJS_CACHE_HOST}:${BASEPATH}${FILE}" "./${FILE}" > /dev/null 2>&1
     done
     exit 0
@@ -78,11 +78,11 @@ if [ "${DRONE_BUILD_EVENT}" = "pull_request" ]; then
     fi
     SPARSE_CHECKOUT="$(git log --name-only --pretty='format:' origin/"${DRONE_REPO_BRANCH}".."${DRONE_COMMIT_SHA}" | awk -F'/' '{ if ($1 == "ajax" && $2 == "libs" && $4) print "/ajax/libs/"$3"/package.json"}' | sort | uniq)"
     if [ "${SPARSE_CHECKOUT}" = "" ]; then
-        echoBoldYellow "No library change detected, will checkout all the libraries!"
+        echoYellow "No library change detected, will checkout all the libraries!"
         echo '/ajax/libs/*/package.json' >> .git/info/sparse-checkout
     else
         echo "${SPARSE_CHECKOUT}" >> .git/info/sparse-checkout
-        echoBoldGreen "Library change detected, use sparseCheckout to checkout path as below:"
+        echoGreen "Library change detected, use sparseCheckout to checkout path as below:"
         echoBlue "${SPARSE_CHECKOUT}"
     fi
 else
@@ -115,11 +115,11 @@ if [ "${DRONE_COMMIT_BRANCH}" = "master" ] && [ "${DRONE_BUILD_EVENT}" = "push" 
     sshpass -e ssh -oStrictHostKeyChecking=no -l "${CDNJS_CACHE_USERNAME}" "${CDNJS_CACHE_HOST}" mkdir -p "${BASEPATH}" > /dev/null 2>&1
     for FILE in .git/ node_modules/
     do
-        echoLightBoldMagenta "Trying to store ${FILE} as cache"
+        echoMagenta "Trying to store ${FILE} as cache"
         rsync -aq --delete --delete-after -e="sshpass -e ssh -oStrictHostKeyChecking=no -l ${CDNJS_CACHE_USERNAME}" "./${FILE}" "${CDNJS_CACHE_HOST}:${BASEPATH}${FILE}" > /dev/null 2>&1
     done
 else
     echo "Branch: ${DRONE_COMMIT_BRANCH}"
     echo "Event:  ${DRONE_BUILD_EVENT}"
-    echoBoldYellow "No cache store here"
+    echoYellow "No cache store here"
 fi
