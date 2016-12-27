@@ -2,7 +2,8 @@ FROM node:4-alpine
 MAINTAINER Peter Dave Hello <hsu@peterdavehello.org>
 ENV NPM_CONFIG_LOGLEVEL warn
 RUN echo '@edge http://dl-cdn.alpinelinux.org/alpine/edge/main' >> /etc/apk/repositories
-RUN apk -Uuv add openssh-client rsync git@edge sshpass coreutils gawk
+RUN apk -U upgrade
+RUN apk -v add openssh-client rsync git@edge sshpass coreutils gawk
 RUN ssh -V
 RUN git --version
 RUN node --version
