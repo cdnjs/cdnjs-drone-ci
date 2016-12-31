@@ -82,6 +82,9 @@ if [ "${DRONE_BUILD_EVENT}" = "pull_request" ]; then
     if [ "${SPARSE_CHECKOUT}" = "" ]; then
         echoYellow "No library change detected, will checkout all the libraries!"
         echo '/ajax/libs/*/package.json' >> .git/info/sparse-checkout
+    elif [ "$(echo "${SPARSE_CHECKOUT}" | wc -l)" -gt 300 ]; then
+        echoYellow "Changed more than 300 libraries, just checkout all the libraries to run the test!"
+        echo '/ajax/libs/*/package.json' >> .git/info/sparse-checkout
     else
         echo "${SPARSE_CHECKOUT}" >> .git/info/sparse-checkout
         echoGreen "Library change detected, use sparseCheckout to checkout path as below:"
