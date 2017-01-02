@@ -13,10 +13,10 @@ echoCyan "npm   v$(npm   --version)"
 echoCyan "rsync v$(rsync --version | head -n 1 | awk '{print $3}')"
 
 err() {
-    >&2 echoRed "\n==========ERROR==========\n";
-    >&2 echo "$@";
-    >&2 echoRed "\n==========ERROR==========\n";
-    exit 1;
+    >&2 echoRed "==========ERROR=========="
+    >&2 echo -e "$@"
+    >&2 echoRed "==========ERROR=========="
+    exit 1
 }
 
 if [ "${CI}" != "drone" ] && [ "${DRONE}" != "true" ]; then err "Not a Drone CI environment"; fi
