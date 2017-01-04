@@ -3,7 +3,7 @@ MAINTAINER Peter Dave Hello <hsu@peterdavehello.org>
 ENV NPM_CONFIG_LOGLEVEL warn
 RUN echo '@edge http://dl-cdn.alpinelinux.org/alpine/edge/main' >> /etc/apk/repositories && \
     apk -U upgrade && \
-    apk -v add openssh-client rsync git@edge sshpass coreutils gawk && \
+    apk -v add openssh-client rsync git@edge sshpass coreutils gawk openssl && \
     rm -rf /var/cache/apk/* && \
     ssh -V && \
     git --version && \

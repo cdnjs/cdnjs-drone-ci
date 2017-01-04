@@ -21,8 +21,6 @@ err() {
 
 if [ "${CI}" != "drone" ] && [ "${DRONE}" != "true" ]; then err "Not a Drone CI environment"; fi
 
-[ -z "${PLUGIN_ACTION}" ] && err "cache action not set! test or restore-cache ?"
-
 CDNJS_CACHE_HOST="$(ip route | awk '{ if ("default" == $1) print $3}')"
 echoCyan "use ${CDNJS_CACHE_HOST} as it's default gateway, should be the host!"
 [ -z "${CDNJS_CACHE_USERNAME}" ] && err  "\"CDNJS_CACHE_USERNAME\" secret not set!"
@@ -43,16 +41,37 @@ CACHE_LIST=".git/ node_modules/"
 BASEPATH='~/cache-cdnjs/'
 export SSHPASS="${CDNJS_CACHE_PASSWORD}"
 
-if [ "${PLUGIN_ACTION}" = "restore-cache" ]; then
-    for FILE in ${CACHE_LIST}
-    do
-        echoMagenta "Trying to restore ${FILE} from cache"
-        rsync -aq -e="sshpass -e ssh -oStrictHostKeyChecking=no -l ${CDNJS_CACHE_USERNAME}" "${CDNJS_CACHE_HOST}:${BASEPATH}${FILE}" "./${FILE}" > /dev/null 2>&1
-    done
-    exit 0
+# cache restore
+for FILE in ${CACHE_LIST}
+do
+    echoMagenta "Trying to restore ${FILE} from cache"
+    rsync -aq -e="sshpass -e ssh -oStrictHostKeyChecking=no -l ${CDNJS_CACHE_USERNAME}" "${CDNJS_CACHE_HOST}:${BASEPATH}${FILE}" "./${FILE}" > /dev/null 2>&1
+done
+
+if [ ! -d ".git" ]; then err "Cache .git directory not found!!! What's going on?"; fi
+
+if [ -n "${DRONE_PULL_REQUEST}" ]; then
+    DRONE_FETCH_TARGET="pull/${DRONE_PULL_REQUEST}/head"
+else
+    DRONE_FETCH_TARGET="${DRONE_COMMIT_BRANCH}"
 fi
 
-if [ "${PLUGIN_ACTION}" != "test" ]; then err "Can't recognize action ${PLUGIN_ACTION}"; fi
+if echo "${DRONE_REPO_LINK}" | grep 'github.com' > /dev/null 2>&1 ; then
+    rm .git/info/sparse-checkout
+    wget "$(echo "${DRONE_REPO_LINK}" | sed 's/github.com/raw.githubusercontent.com/g')/${DRONE_COMMIT_SHA}/${PLUGIN_SPARSECHECKOUT}" -O ".git/info/sparse-checkout" &
+else
+    err "When does CDNJS drop GitHub? No idea!"
+fi
+
+if git remote | grep pre-fetch > /dev/null 2>&1 ; then
+    git fetch pre-fetch "${DRONE_REPO_BRANCH}":"${DRONE_REPO_BRANCH}" -f > /dev/null 2>&1 || {
+        git fetch origin "${DRONE_REPO_BRANCH}":"${DRONE_REPO_BRANCH}" -f
+    }
+else
+    git fetch origin "${DRONE_REPO_BRANCH}":"${DRONE_REPO_BRANCH}" -f
+fi
+
+git fetch origin "${DRONE_FETCH_TARGET}"
 
 if [ ! -f ".git/info/sparse-checkout" ]; then
     err "Didn't detect sparse-checkout config, should be created from previous stage!"
