@@ -20,6 +20,7 @@ err() {
 }
 
 if [ "${CI}" != "drone" ] && [ "${DRONE}" != "true" ]; then err "Not a Drone CI environment"; fi
+[ -n "${PLUGIN_ACTION-}" ] && err "Your branch is out-dated! Please rebase with our latest master branch! Thanks!"
 
 CDNJS_CACHE_HOST="$(ip route | awk '{ if ("default" == $1) print $3}')"
 echoCyan "use ${CDNJS_CACHE_HOST} as it's default gateway, should be the host!"
