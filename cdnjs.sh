@@ -58,12 +58,14 @@ else
 fi
 
 if echo "${DRONE_REPO_LINK}" | grep 'github.com' > /dev/null 2>&1 ; then
+    echoCyan "Clean up old .git/info/sparse-checkout and fetch new one ..."
     rm .git/info/sparse-checkout
     wget "$(echo "${DRONE_REPO_LINK}" | sed 's/github.com/raw.githubusercontent.com/g')/${DRONE_COMMIT_SHA}/${PLUGIN_SPARSECHECKOUT}" -O ".git/info/sparse-checkout" &
 else
     err "When does CDNJS drop GitHub? No idea!"
 fi
 
+echoCyan "Fetch master branch updates ..."
 if git remote | grep pre-fetch > /dev/null 2>&1 ; then
     git fetch pre-fetch "${DRONE_REPO_BRANCH}":"${DRONE_REPO_BRANCH}" -f > /dev/null 2>&1 || {
         git fetch origin "${DRONE_REPO_BRANCH}":"${DRONE_REPO_BRANCH}" -f
@@ -72,6 +74,7 @@ else
     git fetch origin "${DRONE_REPO_BRANCH}":"${DRONE_REPO_BRANCH}" -f
 fi
 
+echoCyan "Fetch the target going to be tested ..."
 git fetch origin "${DRONE_FETCH_TARGET}"
 
 if [ ! -f ".git/info/sparse-checkout" ]; then
