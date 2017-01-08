@@ -39,7 +39,7 @@ fi
 CACHE_LIST=".git/ node_modules/"
 
 # shellcheck disable=SC2088
-BASEPATH='~/cache-cdnjs/'
+BASEPATH='~/cache/'
 export SSHPASS="${CDNJS_CACHE_PASSWORD}"
 
 # cache restore
