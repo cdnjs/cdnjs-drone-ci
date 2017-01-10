@@ -141,7 +141,7 @@ npm install && npm update
 
 echoCyan "run npm test"
 if ! npm test -- --silent > /dev/null 2>&1 ; then
-    npm test -- --color | sed 's/·//g'
+    npm test -- --color 2>&1 | sed 's/·//g'
     err "npm test failed!"
 fi
 
