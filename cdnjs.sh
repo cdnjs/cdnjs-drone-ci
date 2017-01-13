@@ -30,7 +30,14 @@ echoCyan "use ${CDNJS_CACHE_HOST} as it's default gateway, should be the host!"
 if [ "${DRONE_COMMIT_REFSPEC}" ] && [ "${DRONE_BUILD_EVENT}" = "pull_request" ]; then
     DRONE_COMMIT_BRANCH="$(echo "${DRONE_COMMIT_REFSPEC}" | awk -F':' '{print $1}')"
     if [ "${DRONE_COMMIT_BRANCH}" = "master" ]; then
-        err "Please do not send pull request from master branch!\nYou should create a new branch with meaningful name for pull request!\nRef:  https://help.github.com/articles/creating-and-deleting-branches-within-your-repository/"
+        err "Please do not send pull request from master branch!
+You should create a new branch with meaningful name for pull request!
+
+'Creating and deleting branches within your repository' Reference:
+https://help.github.com/articles/creating-and-deleting-branches-within-your-repository/
+
+For the reason why we need to create a new branch for every pull request,
+please refer to the GitHub Flow: https://guides.github.com/introduction/flow/index.html"
     else
         echoCyan "PR branch: ${DRONE_COMMIT_BRANCH}"
     fi
