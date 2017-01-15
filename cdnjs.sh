@@ -32,10 +32,10 @@ if [ "${DRONE_COMMIT_REFSPEC}" ] && [ "${DRONE_BUILD_EVENT}" = "pull_request" ];
     if [ "${DRONE_COMMIT_BRANCH}" = "master" ]; then
         err "Please do not send pull request from master branch!
 You should create a new branch with meaningful name for pull request!
-
+\n
 'Creating and deleting branches within your repository' Reference:
 https://help.github.com/articles/creating-and-deleting-branches-within-your-repository/
-
+\n
 For the reason why we need to create a new branch for every pull request,
 please refer to the GitHub Flow: https://guides.github.com/introduction/flow/index.html"
     else
