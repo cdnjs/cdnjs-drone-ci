@@ -72,11 +72,18 @@ else
     err "When does CDNJS drop GitHub? No idea!"
 fi
 
-echoCyan "Fetch master branch updates ..."
+
+echoCyan "Fetch ${DRONE_REPO_BRANCH} branch updates ..."
+
+if git branch | grep -q "^* ${DRONE_REPO_BRANCH}"; then
+    # we should not be on the target branch, so just jump to the latest commit
+    git checkout -f "$(git log "${DRONE_REPO_BRANCH}" -1 --format=%H)"
+fi
+
 if git remote | grep pre-fetch > /dev/null 2>&1 ; then
-    git fetch pre-fetch "${DRONE_REPO_BRANCH}":"${DRONE_REPO_BRANCH}" -f > /dev/null 2>&1 || {
+    if ! git fetch pre-fetch "${DRONE_REPO_BRANCH}":"${DRONE_REPO_BRANCH}" -f > /dev/null; then
         git fetch origin "${DRONE_REPO_BRANCH}":"${DRONE_REPO_BRANCH}" -f
-    }
+    fi
 else
     git fetch origin "${DRONE_REPO_BRANCH}":"${DRONE_REPO_BRANCH}" -f
 fi
