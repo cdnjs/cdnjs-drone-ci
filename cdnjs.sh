@@ -159,6 +159,13 @@ if ! npm test -- --silent > /dev/null 2>&1 ; then
     err "npm test failed!"
 fi
 
+if [ "$(find ajax/libs -perm /u=x,g=x,o=x -type f | wc -l)" != "0" ]; then
+    >&2 echo "Statc files for web hosting should not be executable!"
+    >&2 echo "Please remove executable permission on the file(s) below:"
+    >&2 find ajax/libs -perm /u=x,g=x,o=x -type f
+    exit 1
+fi
+
 if [ "${DRONE_COMMIT_BRANCH}" = "master" ] && [ "${DRONE_BUILD_EVENT}" = "push" ]; then
     sshpass -e ssh -oStrictHostKeyChecking=no -l "${CDNJS_CACHE_USERNAME}" "${CDNJS_CACHE_HOST}" mkdir -p "${BASEPATH}" > /dev/null 2>&1
     for FILE in ${CACHE_LIST}
