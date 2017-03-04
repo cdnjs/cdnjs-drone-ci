@@ -162,8 +162,10 @@ if ! npm test -- --silent > /dev/null 2>&1 ; then
 fi
 
 if [ "$(find ajax/libs -perm /u=x,g=x,o=x -type f | wc -l)" != "0" ]; then
-    >&2 echo "Static files for web hosting should not be executable!"
-    >&2 echo "Please remove executable permission on the file(s) below:"
+    >&2 echo
+    >&2 echoRed "Static files for web hosting should not be executable!"
+    >&2 echoRed "Please remove executable permission on the file(s) below:"
+    >&2 echo
     >&2 find ajax/libs -perm /u=x,g=x,o=x -type f
     exit 1
 fi
