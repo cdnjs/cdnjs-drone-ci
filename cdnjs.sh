@@ -130,15 +130,13 @@ if [ "${DRONE_BUILD_EVENT}" = "pull_request" ]; then
             echoBlue "${SPARSE_CHECKOUT_TMP}"
         done
     fi
-    echoGreen "Phase one file checkout"
-    git checkout -qf "${DRONE_COMMIT_SHA}"
-    ./tools/createSparseCheckoutConfigForCI.js
 else
     echo '/ajax/libs/*/package.json' >> .git/info/sparse-checkout
-    echoGreen "Phase one file checkout"
-    git checkout -qf "${DRONE_COMMIT_SHA}"
-    ./tools/createSparseCheckoutConfigForCI.js fast
 fi
+
+echoGreen "Phase one file checkout"
+git checkout -qf "${DRONE_COMMIT_SHA}"
+./tools/createSparseCheckoutConfigForCI.js
 
 if [ "${DRONE_BUILD_EVENT}" = "pull_request" ] && [ "${SPARSE_CHECKOUT}" != '/ajax/libs/*/package.json' ] ; then
     for PACKAGE in ${SPARSE_CHECKOUT}
