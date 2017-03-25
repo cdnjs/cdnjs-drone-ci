@@ -164,7 +164,7 @@ if [ "$(git log --summary "${DRONE_REPO_BRANCH}".."${DRONE_COMMIT_SHA}" | grep '
     >&2 echoRed "Static files for web hosting should not be executable!"
     >&2 echoRed "Please remove executable permission on the file(s) below:"
     >&2 echo
-    git log --summary "${DRONE_REPO_BRANCH}".."${DRONE_COMMIT_SHA}" | grep 'ajax/libs/' | awk '{ if (NF == 4 && $2 == "mode" && $3 !~ /^.{3}[64]{3}$/ && $3 != "120000") print $4 }' >&2
+    git log --summary "${DRONE_REPO_BRANCH}".."${DRONE_COMMIT_SHA}" | grep 'ajax/libs/' | awk '{ if (NF == 4 && $2 == "mode" && $3 !~ /^.{3}[64]{3}$/ && $3 != "120000") print $4 " ($3)" }' >&2
     exit 1
 fi
 
