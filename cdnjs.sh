@@ -157,13 +157,13 @@ git reset --hard
 echoCyan "npm install && npm update"
 npm install && npm update
 
-(
+{
     echoCyan "run npm test"
     if ! npm test -- --silent > /dev/null 2>&1 ; then
         npm test -- --color 2>&1 | sed 's/·//g'
         err "npm test failed!"
     fi
-) &
+} &
 
 echoCyan "run file permission test"
 if [ "$(git log --summary "${DRONE_REPO_BRANCH}".."${DRONE_COMMIT_SHA}" | grep 'ajax/libs/' | awk '{ if (NF == 4 && $2 == "mode" && $3 !~ /^.{3}[64]{3}$/ && $3 != "120000" ) print }' | wc -l )" != "0" ]; then
