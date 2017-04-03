@@ -174,7 +174,7 @@ if [ "$(git log --summary "${DRONE_REPO_BRANCH}".."${DRONE_COMMIT_SHA}" | grep '
     exit 1
 fi
 
-if ! wait "${jobs -p}"; then
+if ! wait $(jobs -p); then
     exit 1
 fi
 
