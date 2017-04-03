@@ -91,6 +91,8 @@ fi
 echoCyan "Fetch the target going to be tested ..."
 git fetch origin "${DRONE_FETCH_TARGET}"
 
+wait
+
 if [ ! -f ".git/info/sparse-checkout" ]; then
     err "Didn't detect sparse-checkout config, should be created from previous stage!"
 fi
