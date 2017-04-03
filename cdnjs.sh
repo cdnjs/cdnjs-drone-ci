@@ -77,6 +77,8 @@ fi
 
 echoCyan "Fetch ${DRONE_REPO_BRANCH} branch updates ..."
 
+wait
+
 if git branch | grep -q "^* ${DRONE_REPO_BRANCH}"; then
     # we should not be on the target branch, so just jump to the latest commit
     git checkout -f "$(git log "${DRONE_REPO_BRANCH}" -1 --format=%H)"
@@ -92,8 +94,6 @@ fi
 
 echoCyan "Fetch the target going to be tested ..."
 git fetch origin "${DRONE_FETCH_TARGET}"
-
-wait
 
 if [ ! -f ".git/info/sparse-checkout" ]; then
     err "Didn't detect sparse-checkout config, should be created from previous stage!"
