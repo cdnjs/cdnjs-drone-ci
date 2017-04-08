@@ -122,8 +122,15 @@ if [ "${DRONE_BUILD_EVENT}" = "pull_request" ]; then
     fi
     SPARSE_CHECKOUT="$(git log --name-only --pretty='format:' "${DRONE_REPO_BRANCH}".."${DRONE_COMMIT_SHA}" | awk -F'/' '{ if ($1 == "ajax" && $2 == "libs" && $4) print "/ajax/libs/"$3"/package.json"}' | sort | uniq)"
     if [ "${SPARSE_CHECKOUT}" = "" ]; then
-        echoYellow "No library change detected, will checkout all the libraries!"
-        echo '/ajax/libs/*/package.json' >> .git/info/sparse-checkout
+        MARKDOWN_CHANGES="$(git log --name-only --pretty='format:' "${DRONE_REPO_BRANCH}".."${DRONE_COMMIT_SHA}" | grep -cE '(.(md|markdown))$')"
+        TOTAL_CHANGES="$(git log --name-only --pretty='format:' "${DRONE_REPO_BRANCH}".."${DRONE_COMMIT_SHA}" | grep -cvE '^$')"
+        if [ "${MARKDOWN_CHANGES}" = "${TOTAL_CHANGES}" ]; then
+            echoYellow "No library change detected, only docs updated, no need to run tests"
+            exit 0
+        else
+            echoYellow "No library change detected, will checkout all the libraries!"
+            echo '/ajax/libs/*/package.json' >> .git/info/sparse-checkout
+        fi
     elif [ "$(echo "${SPARSE_CHECKOUT}" | wc -l)" -gt 300 ]; then
         echoYellow "Changed more than 300 libraries, just checkout all the libraries to run the test!"
         echo '/ajax/libs/*/package.json' >> .git/info/sparse-checkout
