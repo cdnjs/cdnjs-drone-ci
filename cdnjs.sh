@@ -12,6 +12,10 @@ echoCyan "git   v$(git   --version | awk '{print $3}')"
 echoCyan "npm   v$(npm   --version)"
 echoCyan "rsync v$(rsync --version | head -n 1 | awk '{print $3}')"
 
+grep_return_true() {
+    grep "$@" || true
+}
+
 err() {
     >&2 echoRed "==========ERROR=========="
     >&2 echo -e "$@"
@@ -67,7 +71,7 @@ else
     DRONE_FETCH_TARGET="${DRONE_COMMIT_BRANCH}"
 fi
 
-if echo "${DRONE_REPO_LINK}" | grep 'github.com' > /dev/null 2>&1 ; then
+if echo "${DRONE_REPO_LINK}" | grep -q 'github.com' ; then
     echoCyan "Clean up old .git/info/sparse-checkout and fetch new one ..."
     rm .git/info/sparse-checkout
     wget "$(echo "${DRONE_REPO_LINK}" | sed 's/github.com/raw.githubusercontent.com/g')/${DRONE_COMMIT_SHA}/${PLUGIN_SPARSECHECKOUT}" -O ".git/info/sparse-checkout" &
@@ -85,7 +89,7 @@ if git branch | grep -q "^* ${DRONE_REPO_BRANCH}"; then
     git checkout -f "$(git log "${DRONE_REPO_BRANCH}" -1 --format=%H)"
 fi
 
-if git remote | grep pre-fetch > /dev/null 2>&1 ; then
+if git remote | grep -q pre-fetch ; then
     if ! git fetch pre-fetch "${DRONE_REPO_BRANCH}":"${DRONE_REPO_BRANCH}" -f > /dev/null; then
         git fetch origin "${DRONE_REPO_BRANCH}":"${DRONE_REPO_BRANCH}" -f
     fi
@@ -115,15 +119,15 @@ git config core.sparseCheckout true
 
 echoCyan "re-create sparseCheckout config"
 if [ "${DRONE_BUILD_EVENT}" = "pull_request" ]; then
-    if [ "$(git log --pretty='%an' "${DRONE_COMMIT_SHA}".."${DRONE_REPO_BRANCH}" | grep -cv '^PeterBot$' )" -gt 20 ]; then
+    if [ "$(git log --pretty='%an' "${DRONE_COMMIT_SHA}".."${DRONE_REPO_BRANCH}" | grep_return_true -cv '^PeterBot$' )" -gt 20 ]; then
         err "The branch ${DRONE_COMMIT_BRANCH} for this pull request is too old, please rebase this branch with the latest ${DRONE_REPO_BRANCH} branch from upstream!"
     elif [ "$(git log --pretty='%an' "${DRONE_COMMIT_SHA}".."${DRONE_REPO_BRANCH}" | wc -l )" -gt 60 ]; then
         err "The branch ${DRONE_COMMIT_BRANCH} for this pull request is a little bit old, please rebase this branch with the latest ${DRONE_REPO_BRANCH} branch from upstream!"
     fi
     SPARSE_CHECKOUT="$(git log --name-only --pretty='format:' "${DRONE_REPO_BRANCH}".."${DRONE_COMMIT_SHA}" | awk -F'/' '{ if ($1 == "ajax" && $2 == "libs" && $4) print "/ajax/libs/"$3"/package.json"}' | sort | uniq)"
     if [ "${SPARSE_CHECKOUT}" = "" ]; then
-        MARKDOWN_CHANGES="$(git log --name-only --pretty='format:' "${DRONE_REPO_BRANCH}".."${DRONE_COMMIT_SHA}" | grep -cE '(.(md|markdown))$')"
-        TOTAL_CHANGES="$(git log --name-only --pretty='format:' "${DRONE_REPO_BRANCH}".."${DRONE_COMMIT_SHA}" | grep -cvE '^$')"
+        MARKDOWN_CHANGES="$(git log --name-only --pretty='format:' "${DRONE_REPO_BRANCH}".."${DRONE_COMMIT_SHA}" | grep_return_true -cE '(.(md|markdown))$')"
+        TOTAL_CHANGES="$(git log --name-only --pretty='format:' "${DRONE_REPO_BRANCH}".."${DRONE_COMMIT_SHA}" | grep_return_true -cvE '^$')"
         if [ "${MARKDOWN_CHANGES}" = "${TOTAL_CHANGES}" ]; then
             echoYellow "No library change detected, only docs updated, no need to run tests"
             exit 0
@@ -174,11 +178,11 @@ npm install && npm update
 } &
 
 echoCyan "run file permission test"
-if [ "$(git log --summary "${DRONE_REPO_BRANCH}".."${DRONE_COMMIT_SHA}" | grep 'ajax/libs/' | awk '{ if (NF == 4 && $2 == "mode" && $3 !~ /^.{3}[64]{3}$/ && $3 != "120000" ) print }' | wc -l )" != "0" ]; then
+if [ "$(git log --summary "${DRONE_REPO_BRANCH}".."${DRONE_COMMIT_SHA}" | grep_return_true 'ajax/libs/' | awk '{ if (NF == 4 && $2 == "mode" && $3 !~ /^.{3}[64]{3}$/ && $3 != "120000" ) print }' | wc -l )" != "0" ]; then
     >&2 echoRed "Static files for web hosting should not be executable!"
     >&2 echoRed "Please remove executable permission on the file(s) below:"
     >&2 echo
-    git log --summary "${DRONE_REPO_BRANCH}".."${DRONE_COMMIT_SHA}" | grep 'ajax/libs/' | awk '{ if (NF == 4 && $2 == "mode" && $3 !~ /^.{3}[64]{3}$/ && $3 != "120000") print $4 " ("$3")" }' >&2
+    git log --summary "${DRONE_REPO_BRANCH}".."${DRONE_COMMIT_SHA}" | grep_return_true 'ajax/libs/' | awk '{ if (NF == 4 && $2 == "mode" && $3 !~ /^.{3}[64]{3}$/ && $3 != "120000") print $4 " ("$3")" }' >&2
     exit 1
 fi
 
