@@ -114,6 +114,12 @@ git config core.pager cat
 echoCyan "make sure git gc.auto enabled"
 git config gc.auto 1
 
+echoCyan "optimize git gc configs"
+git config gc.pruneExpire now
+git config gc.reflogExpire now
+git config gc.aggressiveDepth 1
+git config gc.reflogExpireUnreachable 0
+
 echoCyan "make sure git core.sparseCheckout enabled"
 git config core.sparseCheckout true
 
