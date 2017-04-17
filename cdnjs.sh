@@ -111,8 +111,8 @@ fi
 echoCyan "make sure git pagination disabled"
 git config core.pager cat
 
-echoCyan "make sure git gc.auto disabled"
-git config gc.auto 0
+echoCyan "make sure git gc.auto enabled"
+git config gc.auto 1
 
 echoCyan "make sure git core.sparseCheckout enabled"
 git config core.sparseCheckout true
