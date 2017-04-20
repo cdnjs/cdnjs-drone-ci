@@ -74,7 +74,7 @@ fi
 if echo "${DRONE_REPO_LINK}" | grep -q 'github.com' ; then
     echoCyan "Clean up old .git/info/sparse-checkout and fetch new one ..."
     rm .git/info/sparse-checkout
-    wget -t 3 "$(echo "${DRONE_REPO_LINK}" | sed 's/github.com/raw.githubusercontent.com/g')/${DRONE_COMMIT_SHA}/${PLUGIN_SPARSECHECKOUT}" -O ".git/info/sparse-checkout" &
+    wget -q -t 3 "$(echo "${DRONE_REPO_LINK}" | sed 's/github.com/raw.githubusercontent.com/g')/${DRONE_COMMIT_SHA}/${PLUGIN_SPARSECHECKOUT}" -O ".git/info/sparse-checkout" &
 else
     err "When does CDNJS drop GitHub? No idea!"
 fi
