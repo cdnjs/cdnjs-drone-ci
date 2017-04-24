@@ -111,14 +111,20 @@ fi
 echoCyan "make sure git pagination disabled"
 git config core.pager cat
 
-echoCyan "make sure git gc.auto enabled"
-git config gc.auto 1
+if [ "${DRONE_COMMIT_BRANCH}" = "master" ] && [ "${DRONE_BUILD_EVENT}" = "push" ]; then
+    echoCyan "Configure git.gc for master branch"
+    echoCyan "make sure git gc.auto enabled"
+    git config gc.auto 1
 
-echoCyan "optimize git gc configs"
-git config gc.pruneExpire now
-git config gc.reflogExpire now
-git config gc.aggressiveDepth 1
-git config gc.reflogExpireUnreachable 0
+    echoCyan "optimize git gc configs"
+    git config gc.pruneExpire now
+    git config gc.reflogExpire now
+    git config gc.aggressiveDepth 1
+    git config gc.reflogExpireUnreachable 0
+else
+    echoCyan "Disable git.gc for pull requests"
+    git config gc.auto 0
+fi
 
 echoCyan "make sure git core.sparseCheckout enabled"
 git config core.sparseCheckout true
