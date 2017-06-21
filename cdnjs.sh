@@ -119,6 +119,8 @@ if [ ! -f ".git/info/sparse-checkout" ]; then
 fi
 
 if [ "$(git ls-tree "${DRONE_COMMIT_SHA}" ajax/ | awk '{print $4}')" != "ajax/libs" ]; then
+    echoYellow "Detected path under ajax/:"
+    git ls-tree "${DRONE_COMMIT_SHA}" ajax/
     err "There should be only one directory - 'libs' under 'ajax', please make sure you put the files under correct path."
 fi
 
