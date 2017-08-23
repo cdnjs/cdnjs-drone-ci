@@ -57,7 +57,7 @@ export SSHPASS="${CDNJS_CACHE_PASSWORD}"
 for FILE in ${CACHE_LIST}
 do
     echoMagenta "Trying to restore ${FILE} from cache"
-    rsync -aq -e="sshpass -e ssh -oStrictHostKeyChecking=no -l ${CDNJS_CACHE_USERNAME}" "${CDNJS_CACHE_HOST}:${BASEPATH}${FILE}" "./${FILE}" > /dev/null 2>&1 &
+    rsync -a -e="sshpass -e ssh -oStrictHostKeyChecking=no -l ${CDNJS_CACHE_USERNAME}" "${CDNJS_CACHE_HOST}:${BASEPATH}${FILE}" "./${FILE}" > /dev/null &
 done
 
 wait
