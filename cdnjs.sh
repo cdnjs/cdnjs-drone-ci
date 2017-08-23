@@ -65,6 +65,7 @@ echoMagenta "Cache restored!"
 
 if [ ! -d ".git" ]; then
     2>&1 ls -al
+    2>&1 pwd
     err "Cache .git directory not found!!! What's going on?"
 fi
 
