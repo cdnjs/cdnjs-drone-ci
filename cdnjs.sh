@@ -63,7 +63,10 @@ done
 wait
 echoMagenta "Cache restored!"
 
-if [ ! -d ".git" ]; then err "Cache .git directory not found!!! What's going on?"; fi
+if [ ! -d ".git" ]; then
+    2>&1 ls -al
+    err "Cache .git directory not found!!! What's going on?"
+fi
 
 if [ -n "${DRONE_PULL_REQUEST}" ]; then
     DRONE_FETCH_TARGET="pull/${DRONE_PULL_REQUEST}/head"
