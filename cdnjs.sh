@@ -4,6 +4,8 @@
 
 set -e
 export GPG_TTY=/dev/console
+export FORCE_COLOR=1
+export NPM_CONFIG_LOGLEVEL=warn
 
 echo
 echoCyan "Tool versions:"
