@@ -8,6 +8,7 @@ RUN echo '@edge http://dl-cdn.alpinelinux.org/alpine/edge/main' >> /etc/apk/repo
 RUN ssh -V && \
     git --version && \
     node --version && \
+    curl --version && \
     rsync --version
 ADD cdnjs.sh /bin/
 ADD ColorEchoForShell/dist/ColorEcho.sh /

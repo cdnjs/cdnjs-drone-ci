@@ -12,6 +12,7 @@ echoCyan "Tool versions:"
 echoCyan "node  $(node  --version)"
 echoCyan "git   v$(git   --version | awk '{print $3}')"
 echoCyan "npm   v$(npm   --version)"
+echoCyan "curl  v$(curl   --version)"
 echoCyan "rsync v$(rsync --version | head -n 1 | awk '{print $3}')"
 
 grep_return_true() {
