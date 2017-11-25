@@ -9,6 +9,7 @@ export NPM_CONFIG_LOGLEVEL=warn
 
 echo
 echoCyan "Tool versions:"
+echoCyan "jq    $(jq --version)"
 echoCyan "node  $(node  --version)"
 echoCyan "git   v$(git   --version | awk '{print $3}')"
 echoCyan "npm   v$(npm   --version)"
