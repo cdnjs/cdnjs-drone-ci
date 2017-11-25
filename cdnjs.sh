@@ -51,6 +51,14 @@ please refer to the GitHub Flow: https://guides.github.com/introduction/flow/ind
     fi
 fi
 
+if [ "${DRONE_BUILD_EVENT}" = "pull_request" ]; then
+
+    PR_REPO="$(curl --compressed -s --retry 3 "https://api.github.com/repos/cdnjs/cdnjs/pulls/${DRONE_PULL_REQUEST}" | jq -r .head.repo.owner.login)"
+    if [ "$(curl --compressed -s --retry 3 "https://api.github.com/repos/cdnjs/cdnjs/compare/${DRONE_REPO_BRANCH}...${PR_REPO}:${DRONE_COMMIT_BRANCH}" | jq -r .behind_by)" -gt 60 ]; then
+        err "The branch ${DRONE_COMMIT_BRANCH} for this pull request is a little bit old, please rebase this branch with the latest ${DRONE_REPO_BRANCH} branch from upstream!"
+    fi
+fi
+
 CACHE_LIST=".git/ node_modules/"
 
 # shellcheck disable=SC2088
@@ -142,8 +150,6 @@ echoCyan "re-create sparseCheckout config"
 if [ "${DRONE_BUILD_EVENT}" = "pull_request" ]; then
     if [ "$(git log --pretty='%an' "${DRONE_COMMIT_SHA}".."${DRONE_REPO_BRANCH}" | grep_return_true -cv '^PeterBot$' )" -gt 20 ]; then
         err "The branch ${DRONE_COMMIT_BRANCH} for this pull request is too old, please rebase this branch with the latest ${DRONE_REPO_BRANCH} branch from upstream!"
-    elif [ "$(git log --pretty='%an' "${DRONE_COMMIT_SHA}".."${DRONE_REPO_BRANCH}" | wc -l )" -gt 60 ]; then
-        err "The branch ${DRONE_COMMIT_BRANCH} for this pull request is a little bit old, please rebase this branch with the latest ${DRONE_REPO_BRANCH} branch from upstream!"
     fi
     SPARSE_CHECKOUT="$(git log --name-only --pretty='format:' "${DRONE_REPO_BRANCH}".."${DRONE_COMMIT_SHA}" | awk -F'/' '{ if ($1 == "ajax" && $2 == "libs" && $4) print "/ajax/libs/"$3"/package.json"}' | sort | uniq)"
     if [ "${SPARSE_CHECKOUT}" = "" ]; then
