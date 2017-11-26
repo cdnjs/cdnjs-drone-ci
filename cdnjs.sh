@@ -148,9 +148,6 @@ git config core.sparseCheckout true
 
 echoCyan "re-create sparseCheckout config"
 if [ "${DRONE_BUILD_EVENT}" = "pull_request" ]; then
-    if [ "$(git log --pretty='%an' "${DRONE_COMMIT_SHA}".."${DRONE_REPO_BRANCH}" | grep_return_true -cv '^PeterBot$' )" -gt 20 ]; then
-        err "The branch ${DRONE_COMMIT_BRANCH} for this pull request is too old, please rebase this branch with the latest ${DRONE_REPO_BRANCH} branch from upstream!"
-    fi
     SPARSE_CHECKOUT="$(git log --name-only --pretty='format:' "${DRONE_REPO_BRANCH}".."${DRONE_COMMIT_SHA}" | awk -F'/' '{ if ($1 == "ajax" && $2 == "libs" && $4) print "/ajax/libs/"$3"/package.json"}' | sort | uniq)"
     if [ "${SPARSE_CHECKOUT}" = "" ]; then
         MARKDOWN_CHANGES="$(git log --name-only --pretty='format:' "${DRONE_REPO_BRANCH}".."${DRONE_COMMIT_SHA}" | grep_return_true -cE '(.(md|markdown))$')"
