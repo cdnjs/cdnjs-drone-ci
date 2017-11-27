@@ -176,7 +176,6 @@ fi
 
 echoGreen "Phase one file checkout"
 git checkout -qf "${DRONE_COMMIT_SHA}"
-./tools/createSparseCheckoutConfigForCI.js
 
 if [ "${DRONE_BUILD_EVENT}" = "pull_request" ] && [ "${SPARSE_CHECKOUT}" != '/ajax/libs/*/package.json' ] ; then
     for PACKAGE in ${SPARSE_CHECKOUT}
@@ -187,7 +186,10 @@ if [ "${DRONE_BUILD_EVENT}" = "pull_request" ] && [ "${SPARSE_CHECKOUT}" != '/aj
     done
 fi
 
-echoGreen "reset repository (phase two checkout)"
+echoGreen "Phase two file checkout"
+echoGreen " - Generate sparseCheckout config"
+./tools/createSparseCheckoutConfigForCI.js
+echoGreen " - Reset repository (phase two checkout)"
 git reset --hard
 
 echoCyan "npm install && npm update"
