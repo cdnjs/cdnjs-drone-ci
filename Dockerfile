@@ -11,6 +11,7 @@ RUN ssh -V && \
     curl --version && \
     rsync --version && \
     jq --version
+RUN date > /date
 ADD cdnjs.sh /bin/
 ADD ColorEchoForShell/dist/ColorEcho.sh /
 ENTRYPOINT /bin/cdnjs.sh
