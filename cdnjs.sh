@@ -39,8 +39,8 @@ echoCyan "use ${CDNJS_CACHE_HOST} as it's default gateway, should be the host!"
 if [ "${DRONE_COMMIT_REFSPEC}" ] && [ "${DRONE_BUILD_EVENT}" = "pull_request" ]; then
     DRONE_COMMIT_BRANCH="$(echo "${DRONE_COMMIT_REFSPEC}" | awk -F':' '{print $1}')"
     if [ "${DRONE_COMMIT_BRANCH}" = "master" ] && [ "${DRONE_PULL_REQUEST}" -gt 9999 ]; then
-        err "Please do not send pull request from master branch!
-You should create a new branch with meaningful name for pull request!
+        err "Please do not send pull requests from a master branch!
+You should create a new branch with a meaningful name for pull request!
 \\n
 'Creating and deleting branches within your repository' Reference:
 https://help.github.com/articles/creating-and-deleting-branches-within-your-repository/
