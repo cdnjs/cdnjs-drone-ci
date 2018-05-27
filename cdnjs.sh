@@ -189,14 +189,14 @@ if [ "${DRONE_BUILD_EVENT}" = "pull_request" ] && [ "${SPARSE_CHECKOUT}" != '/aj
     done
 fi
 
+echoCyan "npm install && npm update"
+npm install && npm update
+
 echoGreen "Phase two file checkout"
 echoGreen " - Generate sparseCheckout config"
 ./tools/createSparseCheckoutConfigForCI.js
 echoGreen " - Reset repository (phase two checkout)"
 git reset --hard
-
-echoCyan "npm install && npm update"
-npm install && npm update
 
 {
     echoCyan "run npm test"
