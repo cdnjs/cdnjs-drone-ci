@@ -175,6 +175,8 @@ else
     echo '/ajax/libs/*/package.json' >> .git/info/sparse-checkout
 fi
 
+echo '/package.json' >> .git/info/sparse-checkout
+
 echoGreen "Phase one file checkout"
 git checkout -qf "${DRONE_COMMIT_SHA}"
 
