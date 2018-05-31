@@ -33,8 +33,8 @@ if [ "${CI}" != "drone" ] && [ "${DRONE}" != "true" ]; then err "Not a Drone CI 
 
 CDNJS_CACHE_HOST="$(ip route | awk '{ if ("default" == $1) print $3}')"
 echoCyan "use ${CDNJS_CACHE_HOST} as it's default gateway, should be the host!"
-[ -z "${CDNJS_CACHE_USERNAME}" ] && err  "\"CDNJS_CACHE_USERNAME\" secret not set!"
-[ -z "${CDNJS_CACHE_PASSWORD}" ] && err  "\"CDNJS_CACHE_PASSWORD\" secret not set!"
+[ -z "${CDNJS_CACHE_USERNAME}" ] && err "\"CDNJS_CACHE_USERNAME\" secret not set!"
+[ -z "${CDNJS_CACHE_PASSWORD}" ] && err "\"CDNJS_CACHE_PASSWORD\" secret not set!"
 
 if [ "${DRONE_COMMIT_REFSPEC}" ] && [ "${DRONE_BUILD_EVENT}" = "pull_request" ]; then
     DRONE_COMMIT_BRANCH="$(echo "${DRONE_COMMIT_REFSPEC}" | awk -F':' '{print $1}')"
@@ -67,8 +67,7 @@ BASEPATH='~/cache/'
 export SSHPASS="${CDNJS_CACHE_PASSWORD}"
 
 # cache restore
-for FILE in ${CACHE_LIST}
-do
+for FILE in ${CACHE_LIST}; do
     echoMagenta "Trying to restore ${FILE} from cache"
     rsync -a -e="sshpass -e ssh -oStrictHostKeyChecking=no -l ${CDNJS_CACHE_USERNAME}" "${CDNJS_CACHE_HOST}:${BASEPATH}${FILE}" "./${FILE}" > /dev/null &
 done
@@ -88,7 +87,7 @@ else
     DRONE_FETCH_TARGET="${DRONE_COMMIT_BRANCH}"
 fi
 
-if echo "${DRONE_REPO_LINK}" | grep -q 'github.com' ; then
+if echo "${DRONE_REPO_LINK}" | grep -q 'github.com'; then
     echoCyan "Clean up old .git/info/sparse-checkout and fetch new one ..."
     rm -f .git/info/sparse-checkout
     curl --compressed -s --retry 3 "$(echo "${DRONE_REPO_LINK}" | sed 's/github.com/raw.githubusercontent.com/g')/${DRONE_COMMIT_SHA}/${PLUGIN_SPARSECHECKOUT}" -o ".git/info/sparse-checkout" &
@@ -120,7 +119,7 @@ if git branch | grep -q "^* ${DRONE_REPO_BRANCH}"; then
     git checkout -f "$(git log "${DRONE_REPO_BRANCH}" -1 --format=%H)"
 fi
 
-if git remote | grep -q pre-fetch ; then
+if git remote | grep -q pre-fetch; then
     if ! git fetch pre-fetch "${DRONE_REPO_BRANCH}":"${DRONE_REPO_BRANCH}" -f > /dev/null; then
         git fetch origin "${DRONE_REPO_BRANCH}":"${DRONE_REPO_BRANCH}" -f
     fi
@@ -166,8 +165,7 @@ if [ "${DRONE_BUILD_EVENT}" = "pull_request" ]; then
     else
         echo "${SPARSE_CHECKOUT}" >> .git/info/sparse-checkout
         echoGreen "Library change detected, use sparseCheckout to checkout path as below:"
-        for SPARSE_CHECKOUT_TMP in ${SPARSE_CHECKOUT}
-        do
+        for SPARSE_CHECKOUT_TMP in ${SPARSE_CHECKOUT}; do
             echoBlue "${SPARSE_CHECKOUT_TMP}"
         done
     fi
@@ -180,7 +178,7 @@ echo '/package.json' >> .git/info/sparse-checkout
 echoGreen "Phase one file checkout"
 git checkout -qf "${DRONE_COMMIT_SHA}"
 
-if [ "${DRONE_BUILD_EVENT}" = "pull_request" ] && [ "${SPARSE_CHECKOUT}" != '/ajax/libs/*/package.json' ] ; then
+if [ "${DRONE_BUILD_EVENT}" = "pull_request" ] && [ "${SPARSE_CHECKOUT}" != '/ajax/libs/*/package.json' ]; then
     for PACKAGE in ${SPARSE_CHECKOUT}
     do
         if [ ! -f "${PWD}${PACKAGE}" ]; then
@@ -200,7 +198,7 @@ git reset --hard
 
 {
     echoCyan "run npm test"
-    if ! npm test -- --silent > /dev/null 2>&1 ; then
+    if ! npm test -- --silent > /dev/null 2>&1; then
         npm test -- --color 2>&1 | sed 's/·//g'
         err "npm test failed!"
     fi
@@ -221,8 +219,7 @@ fi
 
 if [ "${DRONE_COMMIT_BRANCH}" = "master" ] && [ "${DRONE_BUILD_EVENT}" = "push" ]; then
     sshpass -e ssh -oStrictHostKeyChecking=no -l "${CDNJS_CACHE_USERNAME}" "${CDNJS_CACHE_HOST}" mkdir -p "${BASEPATH}" > /dev/null 2>&1
-    for FILE in ${CACHE_LIST}
-    do
+    for FILE in ${CACHE_LIST}; do
         echoMagenta "Trying to store ${FILE} as cache"
         rsync -aq --delete --delete-after -e="sshpass -e ssh -oStrictHostKeyChecking=no -l ${CDNJS_CACHE_USERNAME}" "./${FILE}" "${CDNJS_CACHE_HOST}:${BASEPATH}${FILE}" > /dev/null 2>&1 &
     done
