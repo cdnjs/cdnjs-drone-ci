@@ -201,7 +201,7 @@ git reset --hard
     if ! npm test -- --silent > /dev/null 2>&1; then
         npm test -- --color 2>&1 | sed 's/·//g'
         ./tools/fixFormat.js
-        git diff
+        git diff --color
         err "npm test failed!"
     fi
 } &
