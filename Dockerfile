@@ -1,5 +1,7 @@
 FROM node:8-alpine
 LABEL maintainer="Peter Dave Hello <hsu@peterdavehello.org>"
+LABEL name="cdnjs-drone-ci"
+LABEL version="latest"
 ENV NPM_CONFIG_LOGLEVEL warn
 RUN echo '@edge http://dl-cdn.alpinelinux.org/alpine/edge/main' >> /etc/apk/repositories && \
     apk -U upgrade && \
