@@ -16,4 +16,4 @@ RUN ssh -V && \
 RUN date > /date
 COPY cdnjs.sh /bin/
 COPY ColorEchoForShell/dist/ColorEcho.sh /
-ENTRYPOINT /bin/cdnjs.sh
+ENTRYPOINT ["/bin/cdnjs.sh"]
