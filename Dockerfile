@@ -1,5 +1,5 @@
 FROM node:8-alpine
-MAINTAINER Peter Dave Hello <hsu@peterdavehello.org>
+LABEL maintainer="Peter Dave Hello <hsu@peterdavehello.org>"
 ENV NPM_CONFIG_LOGLEVEL warn
 RUN echo '@edge http://dl-cdn.alpinelinux.org/alpine/edge/main' >> /etc/apk/repositories && \
     apk -U upgrade && \
