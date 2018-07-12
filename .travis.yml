@@ -9,6 +9,8 @@ cache:
 
 git:
   depth: 10
+  submodules:
+    false
 
 jobs:
   include:
