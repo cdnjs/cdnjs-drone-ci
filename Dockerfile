@@ -13,7 +13,7 @@ RUN ssh -V && \
     curl --version && \
     rsync --version && \
     jq --version
-RUN date > /date
+RUN date > /build-date
 COPY cdnjs.sh /bin/
 COPY ColorEchoForShell/dist/ColorEcho.sh /
 ENTRYPOINT ["/bin/cdnjs.sh"]

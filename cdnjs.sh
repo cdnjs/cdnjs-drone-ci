@@ -8,7 +8,7 @@ export FORCE_COLOR=1
 export NPM_CONFIG_LOGLEVEL=warn
 
 echo
-echoCyan "Build date: $(cat /date)"
+echoCyan "Build date: $(cat /build-date)"
 echoCyan "Tool versions:"
 echoCyan "jq    $(jq --version)"
 echoCyan "node  $(node  --version)"
