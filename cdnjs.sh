@@ -16,6 +16,7 @@ echoCyan "git   v$(git   --version | awk '{print $3}')"
 echoCyan "npm   v$(npm   --version)"
 echoCyan "curl  v$(curl   --version)"
 echoCyan "rsync v$(rsync --version | head -n 1 | awk '{print $3}')"
+echoCyan "jsonlint  v$(jsonlint --version)"
 
 grep_return_true() {
     grep "$@" || true
@@ -186,6 +187,9 @@ if [ "${DRONE_BUILD_EVENT}" = "pull_request" ] && [ "${SPARSE_CHECKOUT}" != '/aj
         fi
     done
 fi
+
+echoCyan "Run `jsonlint` to find syntax error in json files before phase two sparseCheckout"
+find . -type f -name "*.json" | xargs -n 1 jsonlint -q
 
 echoCyan "npm install && npm update"
 npm install && npm update
