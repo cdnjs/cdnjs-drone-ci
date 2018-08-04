@@ -189,6 +189,7 @@ if [ "${DRONE_BUILD_EVENT}" = "pull_request" ] && [ "${SPARSE_CHECKOUT}" != '/aj
 fi
 
 echoCyan "Run `jsonlint` to find syntax error in json files before phase two sparseCheckout"
+echoCyan "You can also check the syntax of json files online on https://jsonlint.com/"
 find . -type f -name "*.json" | xargs -n 1 jsonlint -q
 
 echoCyan "npm install && npm update"
