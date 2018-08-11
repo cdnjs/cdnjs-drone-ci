@@ -180,8 +180,7 @@ echoGreen "Phase one file checkout"
 git checkout -qf "${DRONE_COMMIT_SHA}"
 
 if [ "${DRONE_BUILD_EVENT}" = "pull_request" ] && [ "${SPARSE_CHECKOUT}" != '/ajax/libs/*/package.json' ]; then
-    for PACKAGE in ${SPARSE_CHECKOUT}
-    do
+    for PACKAGE in ${SPARSE_CHECKOUT}; do
         if [ ! -f "${PWD}${PACKAGE}" ]; then
             err "${PACKAGE} not found!!!"
         fi
@@ -212,7 +211,7 @@ git reset --hard
 } &
 
 echoCyan "run file permission test"
-if [ "$(git log --summary "${DRONE_REPO_BRANCH}".."${DRONE_COMMIT_SHA}" | grep_return_true 'ajax/libs/' | awk '{ if (NF == 4 && $2 == "mode" && $3 !~ /^.{3}[64]{3}$/ && $3 != "120000" ) print }' | wc -l )" != "0" ]; then
+if [ "$(git log --summary "${DRONE_REPO_BRANCH}".."${DRONE_COMMIT_SHA}" | grep_return_true 'ajax/libs/' | awk '{ if (NF == 4 && $2 == "mode" && $3 !~ /^.{3}[64]{3}$/ && $3 != "120000" ) print }' | wc -l)" != "0" ]; then
     >&2 echoRed "Static files for web hosting should not be executable!"
     >&2 echoRed "Please remove executable permission on the file(s) below:"
     >&2 echo
