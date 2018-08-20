@@ -58,6 +58,8 @@ if [ "${DRONE_BUILD_EVENT}" = "pull_request" ]; then
     PR_REPO="$(curl --compressed -s --retry 3 "https://api.github.com/repos/cdnjs/cdnjs/pulls/${DRONE_PULL_REQUEST}" | jq -r .head.repo.owner.login)"
     if [ "$(curl --compressed -s --retry 3 "https://api.github.com/repos/cdnjs/cdnjs/compare/${DRONE_REPO_BRANCH}...${PR_REPO}:${DRONE_COMMIT_BRANCH}" | jq -r .behind_by)" -gt 60 ]; then
         err "The branch ${DRONE_COMMIT_BRANCH} for this pull request is a little bit old, please rebase this branch with the latest ${DRONE_REPO_BRANCH} branch from upstream!"
+    elif [ "$(curl --compressed -s --retry 3 "https://api.github.com/repos/cdnjs/cdnjs/compare/${DRONE_REPO_BRANCH}...${PR_REPO}:${DRONE_COMMIT_BRANCH}" | jq -r .ahead_by)" -gt 10 ]; then
+        err "It's weird to have more than 10 commits in a pull request, please confirm that and contact our maintainer, thank you!"
     fi
 fi
 
