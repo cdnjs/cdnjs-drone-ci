@@ -194,7 +194,7 @@ echoCyan "You can also check the syntax of json files online on https://jsonlint
 find . -type f ! -path "./node_modules/*" -name "*.json" | xargs -n 1 jsonlint -q
 
 echoCyan "npm install && npm update"
-npm install && npm update
+npm install --no-audit && npm update
 
 echoGreen "Phase two file checkout"
 echoGreen " - Generate sparseCheckout config"
