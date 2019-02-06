@@ -202,6 +202,13 @@ echoGreen " - Generate sparseCheckout config"
 echoGreen " - Reset repository (phase two checkout)"
 git reset --hard
 
+echoCyan "File format test"
+for file in $(find . -type f ! -path "./.git/*" ! -path "./node_modules/*" ! -path "./ajax/*") ajax/libs/*/package.json; do
+    if grep -q $'\r$' "$file"; then
+        err "Found file with dos format: $file, please use \`dos2unix\` to convert it to unix format!"
+    fi
+done
+
 echoCyan "run npm test"
 if ! npm test -- --silent > /dev/null 2>&1; then
     npm test -- --color 2>&1 | sed 's/·//g'
