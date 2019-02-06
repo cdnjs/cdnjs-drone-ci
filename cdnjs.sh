@@ -202,15 +202,13 @@ echoGreen " - Generate sparseCheckout config"
 echoGreen " - Reset repository (phase two checkout)"
 git reset --hard
 
-{
-    echoCyan "run npm test"
-    if ! npm test -- --silent > /dev/null 2>&1; then
-        npm test -- --color 2>&1 | sed 's/·//g'
-        ./tools/fixFormat.js
-        git diff --color
-        err "npm test failed!"
-    fi
-} &
+echoCyan "run npm test"
+if ! npm test -- --silent > /dev/null 2>&1; then
+    npm test -- --color 2>&1 | sed 's/·//g'
+    ./tools/fixFormat.js
+    git diff --color
+    err "npm test failed!"
+fi
 
 echoCyan "run file permission test"
 if [ "$(git log --summary "${DRONE_REPO_BRANCH}".."${DRONE_COMMIT_SHA}" | grep_return_true 'ajax/libs/' | awk '{ if (NF == 4 && $2 == "mode" && $3 !~ /^.{3}[64]{3}$/ && $3 != "120000" ) print }' | wc -l)" != "0" ]; then
