@@ -2,7 +2,7 @@ FROM node:8-alpine
 LABEL maintainer="Peter Dave Hello <hsu@peterdavehello.org>"
 LABEL name="cdnjs-drone-ci"
 LABEL version="latest"
-ENV NPM_CONFIG_LOGLEVEL warn
+ENV NPM_CONFIG_LOGLEVEL error
 RUN echo '@edge http://dl-cdn.alpinelinux.org/alpine/edge/main' >> /etc/apk/repositories && \
     apk -U upgrade && \
     apk -v add openssh-client rsync git@edge sshpass coreutils gawk openssl curl ca-certificates jq && \
