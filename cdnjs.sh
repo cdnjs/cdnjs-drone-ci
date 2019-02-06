@@ -14,9 +14,9 @@ echoCyan "jq    $(jq --version)"
 echoCyan "node  $(node  --version)"
 echoCyan "git   v$(git   --version | awk '{print $3}')"
 echoCyan "npm   v$(npm   --version)"
-echoCyan "$(curl   --version)"
 echoCyan "rsync v$(rsync --version | head -n 1 | awk '{print $3}')"
 echoCyan "jsonlint  v$(jsonlint --version)"
+echoCyan "$(curl   --version)"
 
 grep_return_true() {
     grep "$@" || true
