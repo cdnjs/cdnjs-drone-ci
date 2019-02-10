@@ -1,4 +1,4 @@
-FROM node:8-alpine
+FROM node:10-alpine
 LABEL maintainer="Peter Dave Hello <hsu@peterdavehello.org>"
 LABEL name="cdnjs-drone-ci"
 LABEL version="latest"
